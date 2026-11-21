@@ -1,0 +1,46 @@
+{
+    "name": "lfischer/rezepte",
+    "description": "Small static recipe site generator (PHP 8.4, Twig, CommonMark)",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": "^8.4",
+        "league/commonmark": "^2.10",
+        "psr/log": "^3.0",
+        "scssphp/scssphp": "^2.1",
+        "symfony/console": "^8.0",
+        "symfony/html-sanitizer": "^7.4",
+        "twig/twig": "^3.30"
+    },
+    "autoload": {
+        "psr-4": {
+            "Rezepte\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rezepte\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "platform": {
+            "php": "8.4.0"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "require-dev": {
+        "phpunit/phpunit": "^12.5"
+    },
+    "scripts": {
+        "build": "@php build.php",
+        "build:check": "@php build.php --dry-run",
+        "test": "phpunit"
+    },
+    "scripts-descriptions": {
+        "build": "Generate the static website",
+        "build:check": "Validate recipes only",
+        "test": "Run the PHPUnit tests"
+    }
+}
