@@ -8,7 +8,8 @@ The generated website (templates, UI texts) is German.
 
 ## Requirements
 
-- PHP 8.4 (CLI) with `mbstring` and `openssl`
+- PHP 8.4 (CLI); `openssl` is only needed for the one-time download of Bootstrap and jQuery,
+  `gd` only for the tests
 - Composer 2
 - Any web server for the output (an `.htaccess` for Apache is generated)
 
@@ -18,11 +19,15 @@ The generated website (templates, UI texts) is German.
 composer install
 ```
 
-```bash
-cp config/site.local.example.php config/site.php
+Create `config/site.php` with your own values. It is ignored by Git and only needs what differs
+from `config/site.dist.php` – usually just the URL:
+
+```php
+<?php
+return ['base_url' => 'https://your-domain.example'];
 ```
 
-Set your `base_url` in `config/site.php`, then build:
+Then build:
 
 ```bash
 php build.php
@@ -39,7 +44,9 @@ and served locally afterwards.
 | `php build.php --dry-run` | Validate all recipes without writing files |
 | `php build.php -v` | Verbose output |
 | `php build.php --base-url=http://localhost/rezepte/public` | Override the base URL, e.g. for local testing |
-| `vendor/bin/phpunit` | Run the tests |
+| `php build.php --config=path/site.php` | Use a different local configuration file |
+| `composer check` | Coding style (PSR-12), static analysis (PHPStan) and tests |
+| `composer cs:fix` | Fix the coding style |
 
 ## Adding a recipe
 
@@ -81,10 +88,10 @@ A complete example that uses every field and Markdown feature is in
 | `description` | yes | short description (cards, meta description) |
 | `category` | yes | display name of the category |
 | `times` | yes | time segments in order of work (see below) |
-| `yield` | yes | `amount` (integer) and optional `unit` (default: "Portionen") |
+| `yield` | yes | `amount` (integer) and optional `unit` (default: "Portion"/"Portionen") |
 | `difficulty` | yes | `leicht`, `mittel` or `schwer` |
 | `tags` | no | list of keywords |
-| `created`, `updated` | no | dates as `YYYY-MM-DD` |
+| `created`, `updated` | no | dates as `YYYY-MM-DD`; only recipes with `created` appear under "Neueste Rezepte" |
 | `image` | no | image file name in the recipe directory (default: `image.jpg`) |
 
 Each entry in `times` has a `type` – `preparation`, `cooking` or `resting` – the `minutes` and an
@@ -97,9 +104,11 @@ Regular Markdown with GitHub extensions: tables, task lists, strikethrough, auto
 footnotes, definition lists, `{.class}` attributes and `[TOC]` for a table of contents. Raw HTML is
 escaped for security.
 
-A leading `# Heading` is hidden, as the title comes from `meta.json`. Lists or tables under the
-headings **Zutaten**/**Ingredients** and **Zubereitung**/**Instructions** are also used for the
-recipe's structured data in search engines.
+A leading `# Heading` is hidden, as the title comes from `meta.json`.
+
+Further images can be placed in the recipe directory and embedded by file name, e.g.
+`![Teig nach dem Kneten](schritt-1.jpg)`. External images are not allowed; the build reports them
+and any missing files.
 
 ## Configuration
 
@@ -110,10 +119,12 @@ recipe's structured data in search engines.
 |---|---|
 | `name`, `description` | website name and description |
 | `base_url` | absolute URL of the website, e.g. `https://rezepte.example.org` |
-| `author` | optional author name for structured data |
 | `robots` | who may crawl the site (see below) |
 | `pagination.per_page` | recipes per category page |
 | `home.newest_count` | number of newest recipes on the home page |
+| `default_image` | Open Graph image for pages without a recipe image |
+| `paths.*` | directories for recipes, output, templates and assets |
+| `markdown.*` | anchor prefix and link title of the heading permalinks |
 
 ### Search engines and AI crawlers
 
@@ -124,7 +135,9 @@ recipe's structured data in search engines.
 | `none` | no crawling and no indexing |
 
 Note that robots.txt is a request that well-behaved crawlers follow, not an access restriction.
-For a truly private site, use password protection on the server.
+For a truly private site, use password protection on the server. Crawlers only read
+`/robots.txt` at the root of a domain, so the setting has no effect if the site lives in a
+sub-directory (e.g. `https://example.org/rezepte/`).
 
 ## Deployment
 

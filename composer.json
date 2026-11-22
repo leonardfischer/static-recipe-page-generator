@@ -8,8 +8,11 @@
         "league/commonmark": "^2.10",
         "psr/log": "^3.0",
         "scssphp/scssphp": "^2.1",
-        "symfony/console": "^8.0",
-        "symfony/html-sanitizer": "^7.4",
+        "symfony/console": "7.4.*",
+        "symfony/filesystem": "7.4.*",
+        "symfony/finder": "7.4.*",
+        "symfony/html-sanitizer": "7.4.*",
+        "symfony/string": "7.4.*",
         "twig/twig": "^3.30"
     },
     "autoload": {
@@ -31,16 +34,34 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require-dev": {
+        "ext-gd": "*",
+        "friendsofphp/php-cs-fixer": "^3.95",
+        "phpstan/phpstan": "^2.3",
         "phpunit/phpunit": "^12.5"
+    },
+    "suggest": {
+        "ext-openssl": "Needed once to download Bootstrap and jQuery if assets/vendor/ is empty"
     },
     "scripts": {
         "build": "@php build.php",
         "build:check": "@php build.php --dry-run",
-        "test": "phpunit"
+        "test": "phpunit",
+        "analyse": "phpstan analyse --memory-limit=1G",
+        "cs": "php-cs-fixer fix --dry-run --diff",
+        "cs:fix": "php-cs-fixer fix",
+        "check": [
+            "@cs",
+            "@analyse",
+            "@test"
+        ]
     },
     "scripts-descriptions": {
         "build": "Generate the static website",
         "build:check": "Validate recipes only",
-        "test": "Run the PHPUnit tests"
+        "test": "Run the PHPUnit tests",
+        "analyse": "Static analysis with PHPStan",
+        "cs": "Check the coding style (PSR-12)",
+        "cs:fix": "Fix the coding style",
+        "check": "Run coding style check, static analysis and tests"
     }
 }
