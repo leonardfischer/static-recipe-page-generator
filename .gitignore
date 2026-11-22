@@ -1,13 +1,18 @@
 # Dependencies and build output
 /vendor/
 /public/
-/.phpunit.cache/
 
-# Local, private configuration (template: config/site.local.example.php)
+# Tool caches
+/.phpunit.cache/
+/.phpstan.cache/
+/.php-cs-fixer.cache
+
+# Local, private configuration (overrides config/site.dist.php)
 /config/site.php
 
-# IDE and editor settings
+# IDE, editor and tool settings
 /.idea/
+/.claude/
 /.vscode/
 *.swp
 
