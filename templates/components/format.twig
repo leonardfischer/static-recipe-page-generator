@@ -1,0 +1,29 @@
+{# Display helpers for German texts. Usage: {% import 'components/format.twig' as format %} #}
+
+{# Minutes as "2 Std. 30 Min." #}
+{% macro duration(minutes) -%}
+    {%- set hours = minutes // 60 -%}
+    {%- set rest = minutes % 60 -%}
+    {%- if hours == 0 -%}
+        {{ rest }} Min.
+    {%- elseif rest == 0 -%}
+        {{ hours }} Std.
+    {%- else -%}
+        {{ hours }} Std. {{ rest }} Min.
+    {%- endif -%}
+{%- endmacro %}
+
+{# Label of a time segment: own label from meta.json or a default per type #}
+{% macro time_label(time) -%}
+    {{- time.label ?? {preparation: 'Zubereitung', cooking: 'Garzeit', resting: 'Ruhezeit'}[time.type.value] -}}
+{%- endmacro %}
+
+{# Yield such as "12 Stücke"; without a unit "4 Portionen" or "1 Portion" #}
+{% macro yield(yield) -%}
+    {{- yield.amount }} {{ yield.unit ?? (yield.amount == 1 ? 'Portion' : 'Portionen') -}}
+{%- endmacro %}
+
+{# Difficulty such as "Mittel" #}
+{% macro difficulty(difficulty) -%}
+    {{- difficulty.value|capitalize -}}
+{%- endmacro %}

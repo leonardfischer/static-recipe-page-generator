@@ -1,0 +1,42 @@
+# Generated automatically – edit templates/seo/htaccess.txt.twig instead.
+Options -Indexes
+DirectoryIndex index.html
+ErrorDocument 404 {{ url('/404.html') }}
+
+AddDefaultCharset UTF-8
+AddType application/json .json
+AddType image/svg+xml .svg
+AddType image/webp .webp
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set X-Frame-Options "SAMEORIGIN"
+{% if site.robots.noIndex %}
+    # robots: none – no indexing of non-HTML files (images, JSON) either
+    Header always set X-Robots-Tag "noindex, nofollow"
+{% endif %}
+    Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self'"
+</IfModule>
+
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/html "access plus 0 seconds"
+    ExpiresByType application/json "access plus 1 hour"
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/webp "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+</IfModule>
+
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/plain application/javascript text/javascript application/json image/svg+xml application/xml
+</IfModule>
+
+# Do not serve the generator's internal marker file
+<Files ".recipe-build">
+    Require all denied
+</Files>

@@ -1,0 +1,28 @@
+{% extends 'layouts/base.twig' %}
+
+{% set page = page|merge({
+    title: pagination.current > 1 ? category.name ~ ' – Seite ' ~ pagination.current : category.name,
+    description: 'Alle Rezepte der Kategorie ' ~ category.name ~ ' (' ~ category.count ~ ').',
+}) %}
+
+{% block content %}
+    <div class="container">
+        {% include 'components/breadcrumb.twig' with {items: [{label: category.name, path: null}]} only %}
+
+        <header class="mb-4">
+            <h1>{{ category.name }}</h1>
+            <p class="lead text-body-secondary">
+                {{ category.count }} {{ category.count == 1 ? 'Rezept' : 'Rezepte' }} in dieser Kategorie
+                {%- if pagination.total > 1 %} · Seite {{ pagination.current }} von {{ pagination.total }}{% endif %}
+            </p>
+        </header>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for recipe in recipes %}
+                <div class="col">{% include 'components/recipe-card.twig' with {recipe: recipe, heading_level: 2} only %}</div>
+            {% endfor %}
+        </div>
+
+        {% include 'components/pagination.twig' with {pagination: pagination} only %}
+    </div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{
+    "title": "Fluffy Pancakes",
+    "description": "Thick, fluffy buttermilk pancakes – an example recipe that shows every supported field and Markdown feature.",
+    "category": "Examples",
+    "tags": ["Breakfast", "Quick", "Example"],
+    "created": "2026-11-21",
+    "updated": "2026-11-21",
+    "times": [
+        { "type": "preparation", "minutes": 10 },
+        { "type": "resting", "minutes": 15, "label": "Let the batter rest" },
+        { "type": "cooking", "minutes": 20, "label": "Fry" }
+    ],
+    "yield": { "amount": 8, "unit": "pancakes" },
+    "difficulty": "leicht",
+    "image": "image.jpg"
+}

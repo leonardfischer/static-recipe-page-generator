@@ -1,0 +1,13 @@
+{# Breadcrumb navigation. Expects: items = [{label, path|null}] #}
+<nav aria-label="Brotkrümelnavigation">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url('/') }}">Start</a></li>
+        {% for item in items %}
+            {% if item.path %}
+                <li class="breadcrumb-item"><a href="{{ url(item.path) }}">{{ item.label }}</a></li>
+            {% else %}
+                <li class="breadcrumb-item active" aria-current="page">{{ item.label }}</li>
+            {% endif %}
+        {% endfor %}
+    </ol>
+</nav>

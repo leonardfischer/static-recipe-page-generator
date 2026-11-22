@@ -1,0 +1,22 @@
+{# Controlled by the "robots" option in config/site.dist.php or config/site.php -#}
+{% if site.robots.allowsEveryone %}
+User-agent: *
+Allow: {{ url('/') }}
+
+Sitemap: {{ absolute_url('/sitemap.xml') }}
+{% elseif site.robots.noIndex %}
+# This website must not be crawled.
+User-agent: *
+Disallow: {{ url('/') }}
+{% else %}
+# Only selected search engines; all other crawlers (including AI crawlers) are excluded.
+{% for crawler in site.robots.allowedCrawlers %}
+User-agent: {{ crawler }}
+Allow: {{ url('/') }}
+
+{% endfor %}
+User-agent: *
+Disallow: {{ url('/') }}
+
+Sitemap: {{ absolute_url('/sitemap.xml') }}
+{% endif %}

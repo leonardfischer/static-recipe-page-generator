@@ -1,0 +1,30 @@
+{# Page navigation. Expects: pagination (Rezepte\Generator\Pagination) #}
+{% if pagination.total > 1 %}
+    <nav aria-label="Seitennavigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item{{ pagination.hasPrevious ? '' : ' disabled' }}">
+                {% if pagination.hasPrevious %}
+                    <a class="page-link" href="{{ url(pagination.urlPath(pagination.current - 1)) }}" rel="prev">Zurück</a>
+                {% else %}
+                    <span class="page-link">Zurück</span>
+                {% endif %}
+            </li>
+            {% for number in pagination.pages %}
+                <li class="page-item{{ number == pagination.current ? ' active' }}">
+                    {% if number == pagination.current %}
+                        <span class="page-link" aria-current="page">{{ number }}</span>
+                    {% else %}
+                        <a class="page-link" href="{{ url(pagination.urlPath(number)) }}">{{ number }}</a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+            <li class="page-item{{ pagination.hasNext ? '' : ' disabled' }}">
+                {% if pagination.hasNext %}
+                    <a class="page-link" href="{{ url(pagination.urlPath(pagination.current + 1)) }}" rel="next">Weiter</a>
+                {% else %}
+                    <span class="page-link">Weiter</span>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+{% endif %}

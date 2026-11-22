@@ -1,0 +1,81 @@
+{% extends 'layouts/base.twig' %}
+{% import 'components/format.twig' as format %}
+
+{% block content %}
+    {% set meta = recipe.meta %}
+    <article class="container recipe">
+        {% include 'components/breadcrumb.twig' with {items: [
+            {label: category.name, path: category.urlPath},
+            {label: meta.title, path: null},
+        ]} only %}
+
+        <div class="row g-4 align-items-start mb-4">
+            <div class="col-lg-6">
+                <img src="{{ url(recipe.imageUrlPath) }}" class="img-fluid rounded shadow-sm recipe-image"
+                     alt="{{ recipe.imageAlt }}" width="{{ recipe.image.width }}" height="{{ recipe.image.height }}"
+                     fetchpriority="high">
+            </div>
+            <div class="col-lg-6">
+                <a class="badge text-bg-light border text-decoration-none mb-2" href="{{ url(category.urlPath) }}">{{ meta.category }}</a>
+                <h1>{{ meta.title }}</h1>
+                <p class="lead">{{ meta.description }}</p>
+
+                <dl class="row recipe-facts g-0 mb-3">
+                    {% for time in meta.times %}
+                        <dt class="col-6 time-{{ time.type.value }}">{{ format.time_label(time) }}</dt>
+                        <dd class="col-6">{{ format.duration(time.minutes) }}</dd>
+                    {% endfor %}
+                    {% if meta.times|length > 1 %}
+                        <dt class="col-6">Gesamtzeit</dt>
+                        <dd class="col-6 fw-semibold">{{ format.duration(meta.totalTime) }}</dd>
+                    {% endif %}
+                    <dt class="col-6">Menge</dt>
+                    <dd class="col-6">{{ format.yield(meta.yield) }}</dd>
+                    <dt class="col-6">Schwierigkeit</dt>
+                    <dd class="col-6"><span class="difficulty difficulty-{{ meta.difficulty.value }}">{{ format.difficulty(meta.difficulty) }}</span></dd>
+                </dl>
+
+                {% if meta.tags is not empty %}
+                    <ul class="list-inline mb-2" aria-label="Schlagwörter">
+                        {% for tag in meta.tags %}
+                            <li class="list-inline-item mb-1">
+                                <a class="badge rounded-pill text-bg-secondary text-decoration-none"
+                                   href="{{ url('/') }}?q={{ tag|url_encode }}">#{{ tag }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                {% if meta.created or meta.updated %}
+                    <p class="small text-body-secondary mb-0">
+                        {% if meta.created %}Erstellt am <time datetime="{{ meta.created|date('Y-m-d') }}">{{ meta.created|date('d.m.Y') }}</time>{% endif %}
+                        {% if meta.updated and meta.updated != meta.created %}
+                            {{ meta.created ? '· aktualisiert' : 'Aktualisiert' }} am <time datetime="{{ meta.updated|date('Y-m-d') }}">{{ meta.updated|date('d.m.Y') }}</time>
+                        {% endif %}
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-9 recipe-content">
+                {{ content }}
+            </div>
+        </div>
+
+        <nav class="mt-5" aria-label="Weitere Rezepte">
+            <a class="btn btn-outline-primary" href="{{ url(category.urlPath) }}">&larr; Alle Rezepte aus {{ category.name }}</a>
+        </nav>
+
+        {% if related is not empty %}
+            <section class="mt-5" aria-labelledby="related-heading">
+                <h2 id="related-heading" class="h4 mb-3">Mehr aus {{ category.name }}</h2>
+                <div class="row row-cols-1 row-cols-md-3 g-4">
+                    {% for other in related %}
+                        <div class="col">{% include 'components/recipe-card.twig' with {recipe: other} only %}</div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+    </article>
+{% endblock %}

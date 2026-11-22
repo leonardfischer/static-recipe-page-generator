@@ -1,0 +1,91 @@
+{# page.title is the page's own title (null on the home page); page templates may override page values with {% set page = page|merge({...}) %} #}
+{% set page_heading = page.title ?? site.name %}
+<!doctype html>
+<html lang="{{ site.language }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ page.title ? page.title ~ ' – ' ~ site.name : site.name }}</title>
+    <meta name="description" content="{{ page.description }}">
+    {% if site.robots.noIndex %}
+        <meta name="robots" content="noindex, nofollow">
+    {% elseif page.noindex %}
+        <meta name="robots" content="noindex">
+    {% else %}
+        <link rel="canonical" href="{{ absolute_url(page.url_path) }}">
+    {% endif %}
+
+    <meta property="og:type" content="{{ page.type }}">
+    <meta property="og:site_name" content="{{ site.name }}">
+    <meta property="og:locale" content="{{ site.locale }}">
+    <meta property="og:title" content="{{ page_heading }}">
+    <meta property="og:description" content="{{ page.description }}">
+    <meta property="og:url" content="{{ absolute_url(page.url_path) }}">
+    {% if page.image_path %}
+        <meta property="og:image" content="{{ absolute_url(page.image_path) }}">
+    {% endif %}
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="icon" href="{{ asset('static/favicon.svg') }}" type="image/svg+xml">
+    <link rel="stylesheet" href="{{ asset('vendor/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body data-base-path="{{ site.base_path }}" data-search-index="{{ asset('data/recipes.json') }}">
+<a class="visually-hidden-focusable btn btn-light position-absolute m-2" href="#inhalt">Zum Inhalt springen</a>
+
+<header>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom" aria-label="Hauptnavigation">
+        <div class="container">
+            <a class="navbar-brand fw-semibold" href="{{ url('/') }}">{{ site.name }}</a>
+            <button class="navbar-toggler js-nav-toggle" type="button"
+                    aria-controls="main-nav" aria-expanded="false" aria-label="Navigation umschalten">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="main-nav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    {% for category in navigation %}
+                        {# "page" only on the category page itself, "true" on its recipe and sub-pages #}
+                        {% set active = current_path starts with category.urlPath %}
+                        {% set current = current_path == category.urlPath ? 'page' : 'true' %}
+                        <li class="nav-item">
+                            <a class="nav-link{{ active ? ' active' }}" href="{{ url(category.urlPath) }}"
+                               {% if active %}aria-current="{{ current }}"{% endif %}>{{ category.name }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% block nav_search %}
+                    <form class="d-flex" role="search" action="{{ url('/') }}" method="get">
+                        <label class="visually-hidden" for="nav-search">Rezepte durchsuchen</label>
+                        <input class="form-control form-control-sm me-2" type="search" name="q" id="nav-search"
+                               placeholder="Rezept suchen …">
+                        <button class="btn btn-sm btn-outline-primary" type="submit">Suchen</button>
+                    </form>
+                {% endblock %}
+            </div>
+        </div>
+    </nav>
+</header>
+
+<main id="inhalt" class="py-4">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="border-top py-4 mt-5 bg-body-tertiary">
+    <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 small text-body-secondary">
+        <span>&copy; {{ 'now'|date('Y') }} {{ site.name }}</span>
+        <nav aria-label="Kategorien">
+            {% for category in navigation %}
+                <a class="link-secondary me-3" href="{{ url(category.urlPath) }}">{{ category.name }}</a>
+            {% endfor %}
+        </nav>
+    </div>
+</footer>
+
+<button type="button" class="btn btn-primary back-to-top" aria-label="Nach oben" hidden>&uarr;</button>
+
+<script src="{{ asset('vendor/jquery.min.js') }}"></script>
+<script src="{{ asset('js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

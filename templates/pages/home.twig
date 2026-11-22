@@ -1,0 +1,109 @@
+{% extends 'layouts/base.twig' %}
+
+{% block nav_search %}{% endblock %}
+
+{% block content %}
+    <section class="hero py-5 mb-4">
+        <div class="container">
+            <h1 class="display-5 fw-semibold">{{ site.name }}</h1>
+            <p class="lead col-lg-8">{{ site.description }}</p>
+
+            <form id="recipe-search" class="row g-2 align-items-end mt-3" role="search" action="{{ url('/') }}" method="get">
+                <div class="col-12 col-lg-6">
+                    <label for="search-query" class="form-label">Rezepte durchsuchen</label>
+                    <input type="search" class="form-control form-control-lg" id="search-query" name="q"
+                           placeholder="z. B. Hefeteig Frühstück" autocomplete="off">
+                </div>
+                <div class="col-6 col-lg-3">
+                    <label for="search-category" class="form-label">Kategorie</label>
+                    <select class="form-select form-select-lg" id="search-category" name="kategorie">
+                        <option value="">Alle Kategorien</option>
+                        {% for category in navigation %}
+                            <option value="{{ category.slug }}">{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <label for="search-sort" class="form-label">Sortierung</label>
+                    <select class="form-select form-select-lg" id="search-sort" name="sortierung">
+                        <option value="title">Name (A–Z)</option>
+                        <option value="newest">Neueste zuerst</option>
+                        <option value="time">Kürzeste Zeit</option>
+                        <option value="difficulty">Einfachste zuerst</option>
+                    </select>
+                </div>
+                <noscript><div class="col-12"><button class="btn btn-primary" type="submit">Suchen</button></div></noscript>
+            </form>
+        </div>
+    </section>
+
+    <div class="container">
+        <section class="mb-5 js-default-section" aria-labelledby="categories-heading">
+            <h2 id="categories-heading" class="h3 mb-3">Kategorien</h2>
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
+                {% for category in navigation %}
+                    <div class="col">
+                        <a class="card category-card h-100 text-decoration-none" href="{{ url(category.urlPath) }}">
+                            <div class="card-body">
+                                <h3 class="h5 card-title mb-1">{{ category.name }}</h3>
+                                <p class="card-text small text-body-secondary mb-0">
+                                    {{ category.count }} {{ category.count == 1 ? 'Rezept' : 'Rezepte' }}
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        {% if newest is not empty %}
+            <section class="mb-5 js-default-section" aria-labelledby="newest-heading">
+                <h2 id="newest-heading" class="h3 mb-3">Neueste Rezepte</h2>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    {% for recipe in newest %}
+                        <div class="col">{% include 'components/recipe-card.twig' with {recipe: recipe} only %}</div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endif %}
+
+        <section aria-labelledby="all-heading">
+            <div class="d-flex flex-wrap justify-content-between align-items-baseline mb-3 gap-2">
+                <h2 id="all-heading" class="h3 mb-0">Alle Rezepte</h2>
+                <p id="search-status" class="text-body-secondary mb-0" role="status" aria-live="polite">
+                    {{ recipes|length }} {{ recipes|length == 1 ? 'Rezept' : 'Rezepte' }}
+                </p>
+            </div>
+
+            <div id="search-empty" class="alert alert-info" hidden>
+                Keine Rezepte gefunden. Versuche einen anderen oder kürzeren Suchbegriff.
+                <button type="button" class="btn btn-link p-0 align-baseline js-search-reset">Suche zurücksetzen</button>
+            </div>
+
+            <div id="search-results" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {% for recipe in recipes %}
+                    <div class="col">{% include 'components/recipe-card.twig' with {recipe: recipe} only %}</div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+    {# Template for search results; cloned and filled by assets/js/search.js. #}
+    <template id="recipe-card-template">
+        <div class="col">
+            <article class="card h-100 shadow-sm recipe-card">
+                <img class="card-img-top" alt="" loading="lazy" decoding="async">
+                <div class="card-body d-flex flex-column">
+                    <a class="badge text-bg-light border text-decoration-none align-self-start mb-2 js-category"></a>
+                    <h3 class="h5 card-title"><a class="stretched-link text-decoration-none js-title"></a></h3>
+                    <p class="card-text text-body-secondary js-description"></p>
+                    <p class="card-text small text-body-secondary mt-auto mb-0 js-meta"></p>
+                </div>
+            </article>
+        </div>
+    </template>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ asset('js/search.js') }}"></script>
+{% endblock %}
